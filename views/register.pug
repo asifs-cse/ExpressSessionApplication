@@ -15,20 +15,20 @@ html
         form(action='/register' method='post')
           div 
             label(for='firstName') First Name: 
-            input(type='text' id='userFirstName', name='firstname')
+            input(type='text' id='userFirstName', name='userFirstName')
           div 
             label(for='lastName') Last Name: 
-            input(type='text' id='userLastName' name='lastname')
+            input(type='text' id='userLastName' name='userLastName')
           div 
             label(for='Phone') Phone: 
-            input(type='number' id='phone' name='userPhone')
+            input(type='phone' id='phone' name='phone')
           div 
             label(for='Email') Email: 
-            input(type='email' id='email' name='userEmail')
+            input(type='text' id='email' name='email')
           div 
             label(for='Password') Password: 
             input(type='password' id='password' name='password')
           div 
-            input(type='submit' id='submit', value='Submit')
+            input(type='submit' id='submit', value='Register')
     footer 
       p Copyright © by Asif shahriar

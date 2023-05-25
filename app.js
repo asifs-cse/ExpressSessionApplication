@@ -47,7 +47,7 @@ app.post('/register',async (req, res)=>{
       res.status(201).redirect('/login');
     }
   } catch (error) {
-    res.status(500).send(error.message());
+    res.status(500).send(error.message);
   }
 });
 
@@ -56,5 +56,14 @@ app.get('/login', async (req, res)=>{
   res.render('login');
 })
 
+//logout route
+app.get('/logout', async (req, res)=>{
+  res.send('logout');
+})
+
+//profile route
+app.get('/profile', async (req, res)=>{
+  res.send('profile')
+})
 
 module.exports = app;

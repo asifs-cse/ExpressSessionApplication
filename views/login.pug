@@ -10,6 +10,17 @@ html
       a(href='/login') Login
       a(href='logout') Logout
     div 
-      h1 Login page
+      h1 Login
+      div
+        form(action='/login' method='post')
+          div 
+            label(for='email') Email: 
+            input(type='email' id='email' name='userEmail')
+          div 
+            label(for='password') Password: 
+            input(type='password' id='email' name='password')
+          div
+            input(type='submit' value='Login')
+
     footer 
       p Copyright © by Asif shahriar
