@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+html
+  head
+    title Diplomaian
+  body
+    header
+      a(href='/home') Home
+      a(href='/register') Register
+      a(href='/profile') Profile
+      a(href='/login') Login
+      a(href='logout') Logout
+    div(class='container') 
+      h1 Registraation page
+      div(class='form')
+        form(action='/register' method='post')
+          div 
+            label(for='firstName') First Name: 
+            input(type='text' id='userFirstName', name='firstname')
+          div 
+            label(for='lastName') Last Name: 
+            input(type='text' id='userLastName' name='lastname')
+          div 
+            label(for='Phone') Phone: 
+            input(type='number' id='phone' name='userPhone')
+          div 
+            label(for='Email') Email: 
+            input(type='email' id='email' name='userEmail')
+          div 
+            label(for='Password') Password: 
+            input(type='password' id='password' name='password')
+          div 
+            input(type='submit' id='submit', value='Submit')
+    footer 
+      p Copyright © by Asif shahriar
