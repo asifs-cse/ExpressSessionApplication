@@ -119,4 +119,5 @@ app.get('/logout', async (req, res)=>{
   }
 })
 
+//export app module
 module.exports = app;
