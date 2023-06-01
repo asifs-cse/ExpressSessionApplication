@@ -5,6 +5,7 @@ require('./config/database');
 const userModel = require('./models/user.model');
 const app = express();
 
+//call mongo db
 dbConnect();
 
 //create session using mongodb
