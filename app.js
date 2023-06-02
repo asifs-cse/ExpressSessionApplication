@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dbConnect = require('./config/database');
+//export database file
 require('./config/database');
 const userModel = require('./models/user.model');
 const app = express();
