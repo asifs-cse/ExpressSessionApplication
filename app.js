@@ -1,111 +1,102 @@
-const express = require('express');
-const cors = require('cors');
-const dbConnect = require('./config/database');
-//export database file
-require('./config/database');
-const userModel = require('./models/user.model');
+const express = require("express");
+const cors = require("cors");
 const app = express();
-
-//call mongo db
+require("./config/database");
+require("dotenv").config();
+require("./config/passport");
+const User = require("./models/user.model");
+const bcrypt = require("bcrypt");
 dbConnect();
 
-//create session using mongodb
-const mongoStore = require('connect-mongo');
-const passport = require('passport');
-const session = require('express-session');
+const passport = require("passport");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+
+//set view engine
+app.set("view engine", "pug");
+app.set('views', './views/');
+app.use(cors());
+app.use(express.urlencoded({ extended: true}));
+app.use(express.json());
 
 //create session
-app.set('trust proxy',1);
+app.set("trust proxy", 1); // trust first proxy
 app.use(
   session({
-    secret: 'keybord cat',
+    secret: "keyboard cat",
     resave: false,
     saveUninitialized: true,
-    store: mongoStore.create({
-      mongoUrl: 'mongodb://127.0.0.1:27017/passportAuthUser',
-      collectionName: 'sessions',
-    })
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URL,
+      collectionName: "sessions",
+    }),
+    // cookie: { secure: true },
   })
-)
+);
 
 //initialize passport and session
+//initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
 
+//password encryption
+const bcrypt = require('bcrypt');
+const dbConnect = require("./config/database");
+const saltRounds =10;
 
 
-//set view engine pug
-app.set('view engine','pug');
-app.set('views','./views/');
-app.use(cors());
-app.use(express.urlencoded({extended: true}));
-app.use(express.json());
+// base url
+app.get("/", (req, res) => {
+  res.render("index");
+});
 
-//create route
-//base url
-app.get('/',(req, res)=>{
-  res.render('index');
-})
-app.get('/home',(req, res)=>{
-  res.render('index');
-})
-//register get route
-app.get('/register', (req, res)=>{
-  res.render('register');
-})
+// register : get
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
 //register post route
-app.post('/register',async (req, res)=>{
+app.post("/register",async (req, res)=>{
   try {
-    //check user
-    const user = await userModel.findOne({email: req.body.email});
-    if(user){
-      return res.status(400).send('User is already created, try to login');
-    }else{
-      const newUser = new userModel({
-        userFirstName: req.body.userFirstName,
-        userLastName: req.body.userLastName,
-        email: req.body.email,
-        phone: req.body.phone,
-        password: req.body.password,
-      })
-      await newUser.save();
-      res.status(201).redirect('/login');
-    }
+      const user = await userModel.findOne({username: req.body.username});
+      if(user){
+          return res.status(400).send("user is already created");
+      }else{
+          bcrypt.hash(req.body.password,  saltRounds,async (err, hash)=>{
+              const newUser = new userModel({
+                userFirstName: req.body.userFirstName,
+                userLastName: req.body.userLastName,
+                email: req.body.email,
+                phone: req.body.phone,
+                password: hash
+              });
+              await newUser.save();
+              res.status(201).redirect("/login");
+          })
+      }
   } catch (error) {
-    res.status(500).send(error.message);
+      res.status(500).send(error.message);
   }
 });
 
-//check login
-const checkLoggedIn = (req, res, next)=>{
-  if(req.isAuthenticated()){
-    return res.redirect('/profile');
-  }
-  next();
-}
-//login get route
-app.get('/login', checkLoggedIn, (req, res)=>{
+//login: post
+app.get("/login",(req, res)=>{
   res.render('login');
-})
+});
 
-//login post route
-app.post('/login', passport.authenticate('local', {failureRedirect: '/login', successRedirect: '/profile'}),
-function(req, res){
-  res.redirect('/');
-})
+//login get route
+app.post('/login', 
+  passport.authenticate('local', { 
+    failureRedirect: '/login', 
+    successRedirect: "/profile",
+   })
+);
 
-//protected route
-const checkAuthed = (req, res)=>{
-  if(req.isAuthenticated()){
-    return next();
-  }else{
-    res.redirect('/login');
-  }
-}
-//profile route
-app.get('/profile', checkAuthed, (req, res)=>{
-  res.send('/profile')
-})
+//profile 
+app.get("/profile",(req, res)=>{
+  res.render('profile');
+});
+
 
 //logout route
 app.get('/logout', async (req, res)=>{
